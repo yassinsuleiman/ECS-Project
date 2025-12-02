@@ -8,7 +8,7 @@ COPY go.mod go.sum ./
 RUN go mod download 
 # Copy Source Code
 COPY . .
-# Build: Slimmed down and defined
+# Build: Slimmed down and git s
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/gatus-build
 
 
