@@ -1,0 +1,46 @@
+name: Build and Push Docker Image to AWS ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Docker/Dockerfile"
+
+permissions: #(required for OIDC)
+  id-token: write 
+  contents: read 
+  
+jobs:
+  build:
+    name: Build and push to ECR
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: eu-central-1
+
+    - name: Log in to AWS ECR
+      id: ecr-login
+      uses: aws-actions/amazon-ecr-login@v2
+
+
+
+    - name: Build Docker image
+      run: |
+       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} .
+      env:
+        ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+        ECR_REPOSITORY: hitc-docker-cicd-ecr
+
+    - name: Push Docker image to ECR
+      run: |
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.get-version.outputs.version }}
+      env:
+        ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+        ECR_REPOSITORY: hitc-docker-cicd-ecr
