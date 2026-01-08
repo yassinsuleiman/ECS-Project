@@ -12,7 +12,6 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/gatus-build
 
 
-
 # App stage
 FROM gcr.io/distroless/base-debian12 AS release
 #working  dir
@@ -22,6 +21,6 @@ COPY --from=builder /app/gatus-build /app/gatus-build
 COPY --from=builder /app/config/config.yaml /app/config/
 #Expose Web Port
 EXPOSE 8080
-#Run Build
+#Run Buildd
 CMD ["/app/gatus-build"]
 
