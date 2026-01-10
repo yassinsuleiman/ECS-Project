@@ -7,7 +7,7 @@ on:
       - "Docker/Dockerfile"
       - ".github/workflows/build.yml"
 
-permissions: #(required for OIDC)
+permissions: #(required for OIDC
   id-token: write 
   contents: read 
   
