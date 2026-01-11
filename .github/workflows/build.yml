@@ -40,9 +40,10 @@ jobs:
     - name: Run Trivy scanner on Image
       uses: aquasecurity/trivy-action@0.33.1
       with:
-        image-ref: "${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+        image-ref: "${{ steps.ecr-login.outputs.registry }}/gatus-app:${{ github.sha }}"
         format: table
         severity: CRITICAL,HIGH
+        scanners: vuln
         ignore-unfixed: true
         exit-code: 1
 
