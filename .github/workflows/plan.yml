@@ -1,0 +1,37 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch: 
+    inputs:
+        terraform-plan:
+            description: 'Terraform plan?'
+            required: true
+            type: string
+
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Checkov action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: Terraform
+    
+    - name: Configure AWS Credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
+        aws-region: ${{ vars.AWS_REGION }}
+
+    - name: terraform plan
+      uses: dflook/terraform-plan@v2
+      with:
+         path: Terraform
+
+    
