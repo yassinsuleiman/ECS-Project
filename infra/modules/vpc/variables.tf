@@ -1,7 +1,7 @@
 #network.tf
 variable "az_count" {
-    description = "Number of AZs to cover in a given region"
-    type = number
+  description = "Number of AZs to cover in a given region"
+  type        = number
 
 }
 variable "my_vpc_cidr" {
@@ -13,12 +13,12 @@ variable "my_vpc_cidr" {
 
 variable "app_port" {
   description = "Definition of first port protocol"
-  default = "8080"
+  default     = "8080"
 }
 
 
 variable "project_name" {
-  type = string
+  type        = string
   description = "Dynamic naming of ressources by project name"
-  
+
 }

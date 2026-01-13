@@ -1,41 +1,41 @@
 resource "aws_alb" "main" {
-    name        = "gatus-alb"
-    subnets         = var.public_subnets
-    security_groups = [var.alb_sg]
-    
-    }
+  name            = "gatus-alb"
+  subnets         = var.public_subnets
+  security_groups = [var.alb_sg]
+
+}
 
 resource "aws_alb_target_group" "app_tg" {
-    name        = "gatus-target-group"
-    port        = 8080
-    protocol    = "HTTP"
-    vpc_id      = var.vpc_id
-    target_type = "ip"
+  name        = "gatus-target-group"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
 
-    health_check {
-        healthy_threshold   = "3"
-        interval            = "30"
-        protocol            = "HTTP"
-        matcher             = "200"
-        timeout             = "3"
-        path                = var.health_check_path
-        unhealthy_threshold = "2"
-    }
+  health_check {
+    healthy_threshold   = "3"
+    interval            = "30"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = var.health_check_path
+    unhealthy_threshold = "2"
+  }
 }
 
 # Redirect all traffic from the ALB to the target group
 resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.main.arn
-  port = 80
+  port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type             = "redirect"
+    type = "redirect"
 
 
     redirect {
-      port = "443"
-      protocol = "HTTPS"
+      port        = "443"
+      protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
   }

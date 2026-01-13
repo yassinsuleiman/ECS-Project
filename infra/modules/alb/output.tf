@@ -1,16 +1,16 @@
 output "health_check_path" {
-value = var.health_check_path
-  
+  value = var.health_check_path
+
 }
 
 output "alb_hostname" {
   description = "This is the ALB DNSS"
-  value = aws_alb.main.dns_name
+  value       = aws_alb.main.dns_name
 }
 
 output "alb_tg" {
   description = "ID of the Load balancer Target Group"
-  value = aws_alb_target_group.app_tg.id
+  value       = aws_alb_target_group.app_tg.id
 }
 
 output "lb_listener" {
