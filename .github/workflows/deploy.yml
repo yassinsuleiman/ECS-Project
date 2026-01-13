@@ -48,6 +48,13 @@ jobs:
         with:
           path: infra
 
+      - name: Terraform Unlock
+        uses: dflook/terraform-unlock-state@v2
+        continue-on-error: true
+        with:
+           path: infra
+           lock_id: ${{ secrets.LOCK_ID }}      
+
       - name: terraform apply
         uses: dflook/terraform-apply@v2
         with:

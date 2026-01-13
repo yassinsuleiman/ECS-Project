@@ -29,6 +29,14 @@ jobs:
           role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      
+      - name: Terraform Unlock
+        uses: dflook/terraform-unlock-state@v2
+        continue-on-error: true
+        with:
+          path: infra
+          lock_id: ${{ secrets.LOCK_ID }}  
+
       - name: terraform destroy
         uses: dflook/terraform-destroy@v2
         id: first_try
