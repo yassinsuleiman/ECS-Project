@@ -1,0 +1,40 @@
+name: Terraform Destroy
+on: 
+    workflow_dispatch: 
+        inputs: 
+            terraform-destroy: 
+                description: 'Are you sure you want to run "terraform destroy?" This will delete all infrastructure and cannot be undone!'
+                required: true
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infra
+          soft_fail: true
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: terraform destroy
+        uses: dflook/terraform-destroy@v2
+        id: first_try
+        continue-on-error: true
+        with:
+          path: infra
+       
+
+    
