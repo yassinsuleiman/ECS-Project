@@ -49,7 +49,7 @@ jobs:
       uses: dflook/terraform-unlock-state@v2
       with:
         path: infra
-        lock_id: 85ea0b1f-b53d-a6e5-6889-e22aba98435f  
+        lock_id: ${{ secrets.LOCK_ID }}
 
     - name: terraform apply
       uses: dflook/terraform-apply@v2
