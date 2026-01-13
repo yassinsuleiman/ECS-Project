@@ -34,9 +34,21 @@ jobs:
         role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
         aws-region: ${{ vars.AWS_REGION }}
 
+    - name: terraform validate
+      uses: dflook/terraform-validate@v2
+      id: validate
+      with:
+        path: infra
+
     - name: terraform plan
       uses: dflook/terraform-plan@v2
       with:
          path: infra
+
+    - name: terraform apply
+      uses: dflook/terraform-apply@v2
+      with:
+          path: infra
+          auto_approve: true
 
     
