@@ -1,0 +1,67 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch: 
+    inputs:
+        terraform-plan:
+            description: 'Terraform plan?'
+            required: true
+            type: string
+  push:
+     branches: [ main ]
+     paths:
+       - ".github/workflows/build.yaml"
+
+
+permissions:
+  id-token: write
+  contents: read
+
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Checkov action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: infra
+        soft_fail: true
+    
+    - name: Configure AWS Credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
+        aws-region: ${{ vars.AWS_REGION }}
+
+    - name: terraform validate
+      uses: dflook/terraform-validate@v2
+      id: validate
+      with:
+        path: infra
+
+    - name: terraform plan
+      uses: dflook/terraform-plan@v2
+      with:
+         path: infra
+    
+    - name: Terraform Unlock
+      uses: dflook/terraform-unlock-state@v2
+      continue-on-error: true
+      with:
+        path: infra
+        lock_id: ${{secrets.LOCK_ID}}
+
+    - name: terraform apply
+      uses: dflook/terraform-apply@v2
+      with:
+          path: infra
+          auto_approve: true
+          
+
+    
