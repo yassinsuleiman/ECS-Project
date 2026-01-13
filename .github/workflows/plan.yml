@@ -44,6 +44,9 @@ jobs:
       uses: dflook/terraform-plan@v2
       with:
          path: infra
+    
+    - name: Terraform Unlock
+      uses: dflook/terraform-unlock-state@v2
 
     - name: terraform apply
       uses: dflook/terraform-apply@v2
