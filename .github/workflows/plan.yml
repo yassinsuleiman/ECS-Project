@@ -47,11 +47,15 @@ jobs:
     
     - name: Terraform Unlock
       uses: dflook/terraform-unlock-state@v2
+      with:
+        path: infra
+        lock_id: 85ea0b1f-b53d-a6e5-6889-e22aba98435f  
 
     - name: terraform apply
       uses: dflook/terraform-apply@v2
       with:
           path: infra
           auto_approve: true
+          
 
     
