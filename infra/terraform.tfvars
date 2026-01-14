@@ -7,5 +7,5 @@ health_check_path = "/"
 fargate_cpu       = 1024
 fargate_memory    = 2048
 validation_method = "DNS"
-domain_name       = "yassin-app.click"
+domain_name       = "yassinsuleiman.com"
 subdomain         = "tm"
