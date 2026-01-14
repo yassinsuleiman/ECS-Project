@@ -1,17 +1,10 @@
 name: Terraform Deploy
 
 "on":
-  workflow_dispatch:
-    inputs:
-      terraform-plan:
-        description: "Terraform plan?"
-        required: true
-        type: string
-
   push:
     branches: [ main ]
     paths:
-      - ".github/workflows/deploy.yaml"
+      - "infra/**"
 
 permissions:
   id-token: write
