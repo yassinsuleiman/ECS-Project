@@ -16,6 +16,9 @@ module "alb" {
   health_check_path = var.health_check_path
   certificate_arn   = module.acm.certificate_arn
 
+depends_on = [module.acm]
+
+
 
 
 }
@@ -46,6 +49,7 @@ module "acm" {
   subdomain         = var.subdomain
   zone_id           = module.Route53.zone_id
 
+ depends_on = [module.Route53]
 
 }
 
@@ -56,5 +60,21 @@ module "Route53" {
   alb_zone    = module.alb.alb_zone_id
   subdomain   = var.subdomain
 
+  
 
+
+}
+
+
+resource "aws_route53_record" "www" {
+  zone_id = module.Route53.zone_id
+  name    = var.subdomain
+  type    = "A"
+
+  alias {
+    name                   = var.alb_dns
+    zone_id                = var.alb_zone
+    evaluate_target_health = true
+  }
+  
 }
