@@ -1,5 +1,5 @@
 # Lightweight Image for Application
-FROM dhi.io/golang:1.25-fips@sha256:5d243ac3fac0c8439791c9a425bb5fd8e781a9e8337d18be6ba6341952eb0558 as Builder
+FROM dhi.io/golang:1.25-debian13@sha256:cb0ea0651b90830450438288e426be1b82ffdc4a4e1346b94a0e65cb0093f1e3 as builder
 # Set destination for COPY
 WORKDIR /app
 # Copy GO module dependencies
@@ -13,7 +13,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/gatus-build
 
 
 # App stage// runs as non-root
-FROM dhi.io/golang:1.25-fips@sha256:5d243ac3fac0c8439791c9a425bb5fd8e781a9e8337d18be6ba6341952eb0558 as Release
+FROM dhi.io/golang:1.25-debian13@sha256:cb0ea0651b90830450438288e426be1b82ffdc4a4e1346b94a0e65cb0093f1e3 as release
 #working  dir
 WORKDIR /app
 #copy into distroless working dir
