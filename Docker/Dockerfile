@@ -1,5 +1,5 @@
 # Lightweight Image for Application
-FROM dhi.io/golang:1.25-debian13@sha256:cb0ea0651b90830450438288e426be1b82ffdc4a4e1346b94a0e65cb0093f1e3 as builder
+FROM golang:1.25-alpine AS builder
 # Set destination for COPY
 WORKDIR /app
 # Copy GO module dependencies
@@ -8,12 +8,13 @@ COPY go.mod go.sum ./
 RUN go mod download 
 # Copy Source Code
 COPY . .
-# Build: Slimmed down and git s
+# Build: Slimmed down and defined
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/gatus-build
 
 
-# App stage// runs as non-root
-FROM dhi.io/golang:1.25-debian13@sha256:cb0ea0651b90830450438288e426be1b82ffdc4a4e1346b94a0e65cb0093f1e3 as release
+
+# App stage
+FROM gcr.io/distroless/static-debian12:nonroot AS release
 #working  dir
 WORKDIR /app
 #copy into distroless working dir
@@ -21,6 +22,5 @@ COPY --from=builder /app/gatus-build /app/gatus-build
 COPY --from=builder /app/config/config.yaml /app/config/
 #Expose Web Port
 EXPOSE 8080
-#Run Builddd
+#Run Build
 CMD ["/app/gatus-build"]
-
