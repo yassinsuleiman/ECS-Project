@@ -43,7 +43,6 @@ jobs:
             module.alb
             module.ecs
             module.acm
-            module.Route53
 
       - name: Unlock state if locked (during plan)
         if: ${{ steps.plan_first.outputs.failure-reason == 'state-locked' }}
