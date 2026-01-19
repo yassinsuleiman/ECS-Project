@@ -1,10 +1,12 @@
 name: Terraform Destroy
-on: 
-    workflow_dispatch: 
-        inputs: 
-            terraform-destroy: 
-                description: 'Are you sure you want to run "terraform destroy?" This will delete all infrastructure and cannot be undone!'
-                required: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      terraform-destroy:
+        description: 'Are you sure you want to run "terraform destroy?" This will delete all infrastructure and cannot be undone!'
+        required: true
+
 permissions:
   id-token: write
   contents: read
@@ -29,20 +31,13 @@ jobs:
           role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      
-      - name: Terraform Unlock
-        uses: dflook/terraform-unlock-state@v2
+      - name: terraform plan (destroy, targeted) - first try
+        id: plan_first
         continue-on-error: true
-        with:
-          path: infra
-          lock_id: ${{ secrets.LOCK_ID }}  
-
-
-      - name: terraform destroy target
-        id: plan
         uses: dflook/terraform-plan@v2
         with:
           path: infra
+          destroy: true
           target: |
             module.vpc
             module.alb
@@ -50,12 +45,47 @@ jobs:
             module.acm
             module.Route53
 
-      - name: Apply destory plan
-        uses: dflook/terraform-apply@v2
-        continue-on-error: true
+      - name: Unlock state if locked (during plan)
+        if: ${{ steps.plan_first.outputs.failure-reason == 'state-locked' }}
+        uses: dflook/terraform-unlock-state@v2
         with:
-           path: infra 
-           plan_file: ${{ steps.plan.outputs.plan_path }}
+          path: infra
+          lock_id: ${{ fromJSON(steps.plan_first.outputs.lock-info).ID }}
 
+      - name: terraform plan (destroy, targeted) - retry
+        id: plan_retry
+        if: ${{ steps.plan_first.outputs['failure-reason'] == 'state-locked' }}
+        uses: dflook/terraform-plan@v2
+        with:
+          path: infra
+          destroy: true
+          target: |
+            module.vpc
+            module.alb
+            module.ecs
+            module.acm
+            module.Route53
 
-    
+      - name: terraform apply (destroy plan) - first try
+        id: apply_first
+        continue-on-error: true
+        uses: dflook/terraform-apply@v2
+        with:
+          path: infra
+          plan_path: ${{ steps.plan_first.outcome == 'success' && steps.plan_first.outputs.plan_path || steps.plan_retry.outputs.plan_path }}
+          auto_approve: true
+
+      - name: Unlock state if locked (during apply)
+        if: ${{ steps.apply_first.outputs['failure-reason'] == 'state-locked' }}
+        uses: dflook/terraform-unlock-state@v2
+        with:
+          path: infra
+          lock_id: ${{ fromJSON(steps.apply_first.outputs['lock-info']).ID }}
+
+      - name: terraform apply (retry)
+        if: ${{ steps.apply_first.outputs['failure-reason'] == 'state-locked' }}
+        uses: dflook/terraform-apply@v2
+        with:
+          path: infra
+          plan_path: ${{ steps.plan_first.outcome == 'success' && steps.plan_first.outputs.plan_path || steps.plan_retry.outputs.plan_path }}
+          auto_approve: true
