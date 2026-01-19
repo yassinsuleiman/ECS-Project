@@ -44,12 +44,12 @@ jobs:
         docker build -f Docker/Dockerfile -t "$ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}" app
       env:
         ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-        ECR_REPOSITORY: gatus-app
+        ECR_REPOSITORY: gatus-repo
 
     - name: Run Trivy scanner on Image
       uses: aquasecurity/trivy-action@0.33.1
       with:
-        image-ref: "${{ steps.ecr-login.outputs.registry }}/gatus-app:${{ github.sha }}"
+        image-ref: "${{ steps.ecr-login.outputs.registry }}/gatus-repo:${{ github.sha }}"
         format: table
         severity: CRITICAL,HIGH
         scanners: vuln
@@ -60,5 +60,6 @@ jobs:
       run: |
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
       env:
+        
         ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-        ECR_REPOSITORY: gatus-app
+        ECR_REPOSITORY: gatus-repo
