@@ -10,9 +10,7 @@ resource "aws_acm_certificate" "cert" {
     Name = "${var.project_name}-certificate"
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
+
 }
 
 
