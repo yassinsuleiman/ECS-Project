@@ -1,8 +1,27 @@
 # Gatus ECS Deployment Project
-
 A production-ready infrastructure-as-code project for deploying **[Gatus](https://github.com/TwiN/gatus)** on **AWS ECS (Fargate)** using **Terraform** and **GitHub Actions CI/CD (OIDC)**.
 
+## What This Project Does
+
+This project deploys Gatus as a **production-style, cloud-hosted application** on AWS:
+
+- **Scalable hosting**: Runs on **AWS ECS Fargate** (serverless containers)
+- **High availability**: Deployed across **multiple Availability Zones**
+- **Secure access**: **HTTPS** via **ACM** + **ALB** with a custom domain (Route 53)
+- **Private compute**: Tasks run in **private subnets** (no public IPs)
+- **Automated delivery**: GitHub Actions workflows for build → scan → plan → apply
+- **Security checks**: Container scanning (**Trivy**) + IaC scanning (**Checkov/TfSec**)
+
 ---
+
+
+
+## Architecture Diagram
+
+![AWS Architecture Diagram](images/architecture.png)
+
+*Architecture diagram showing the complete AWS infrastructure setup for the Gatus application deployment on ECS Fargate.*
+
 
 ## What is Gatus?
 
@@ -17,24 +36,6 @@ Gatus is a great “real-world” demo app because it naturally exercises produc
 
 ---
 
-## What This Project Does
-
-This project deploys Gatus as a **production-style, cloud-hosted application** on AWS. Instead of running it locally or on a single VM, this setup provides:
-
-- **Scalable hosting**: Runs on **AWS ECS Fargate** (serverless containers)
-- **High availability**: Deployed across **multiple Availability Zones**
-- **Secure access**: **HTTPS** via **ACM** + **ALB** with a custom domain (Route 53)
-- **Private compute**: Tasks run in **private subnets** (no public IPs)
-- **Automated delivery**: GitHub Actions workflows for build → scan → plan → apply
-- **Security checks**: Container scanning (**Trivy**) + IaC scanning (**Checkov/TfSec**)
-
----
-
-## Architecture Diagram
-
-![AWS Architecture Diagram](images/architecture.png)
-
-*Architecture diagram showing the complete AWS infrastructure setup for the Gatus application deployment on ECS Fargate.*
 
 ## Deployment Status
 
@@ -50,83 +51,69 @@ This repo uses separate GitHub Actions workflows:
 
 *The Gatus web application running in production with HTTPS encryption on the custom domain https://tm.yassinsuleiman.com, deployed on AWS ECS Fargate.*
 
-## Description of the Project
-
-This project sets up the infrastructure needed to run Gatus on AWS Elastic Container Service (ECS). It includes modular Terraform configurations for all AWS resources, automated deployment through GitHub Actions, and a Docker-based container setup.
-
-The infrastructure is production-ready with load balancing, SSL/TLS certificates, high availability across multiple availability zones, and security best practices built in. The architecture uses ECS Fargate for serverless container hosting, which scales automatically based on demand.
-
-Key features include automated deployments that trigger on pushes to the main branch, HTTPS encryption with ACM certificates, private subnets for application security, ""CloudWatch logging and monitoring,"" GitHub Actions CI/CD with OIDC authentication, and reusable Terraform modules for VPC, ECS, ALB, ECR, Route53, and IAM. The pipeline also includes security scanning with Trivy and TfSec.
+---
 
 ## Demo of the Application
+![alt text](image.png)
 
-[Watch Demo Screen Recording](https://www.loom.com/share/11dce8d46d0949a9ba34c37633aa17df)
-
-This demo shows the Aim web application interface and demonstrates how it tracks machine learning experiments, logs metrics and parameters, and visualizes results through its web-based UI.
+This demo shows the Gatus web application interface and demonstrates how it tracks machine learning experiments, logs metrics and parameters, and visualizes results through its web-based UI.
 
 ## Local Setup
 
-Prerequisites: Python 3.11+.
-
+Prerequisites: Docker
 Run locally:
 
 ```bash
-pip install aim  
-aim up --host 0.0.0.0 --port 8080
+cd app
+
+# build
+docker build -t gatus:local .
+
+# run
+docker run --rm -p 8080:8080 gatus:local
+
+# verify
+curl http://localhost:8080/health
 ```
 
-The Aim UI will be available at http://localhost:8080.
+The Gatus UI will be available at http://localhost:8080.
 
 ## Project Structure
 
 ```
-aim-ecs-project/
+ECS-Project/
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml
-│       ├── destroy.yml
-│       └── build.yml
-├── aim/
-│   ├── aim/
-│   ├── docker/
-│   │   └── Dockerfile
-│   └── main.py
-├── infra/
+│       ├── build.yml        # Docker build + scan (Trivy) + push to ECR
+│       ├── deploy.yml       # Terraform fmt/validate/plan/apply + health check
+│       └── destroy.yml      # Manual teardown (terraform destroy)
+│
+├── app/                     # Gatus app + container build context
+│   ├── Dockerfile
+│   ├── config.yaml          # Gatus config (checks/alerts)
+│   └── ...
+│
+├── infra/                   # Terraform IaC (modular)
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
 │   ├── terraform.tfvars
 │   └── modules/
 │       ├── vpc/
-│       ├── ecs/
 │       ├── alb/
+│       ├── ecs/
 │       ├── ecr/
 │       ├── route53/
 │       └── acm/
+│
+├── images/                  # Diagrams + screenshots used in README
+│   ├── architecture.png
+│   ├── app.png
+│   └── ...
+│
 └── README.md
 ```
 
-## Development
-
-Run tests with:
-
-```bash
-cd aim
-pytest tests/
-```
-
-For linting:
-
-```bash
-cd infra
-terraform fmt -check
-tflint
-
-cd aim
-ruff check .
-```
-
-The CI/CD pipeline automatically runs TfSec for Terraform security scanning and Trivy for Docker image vulnerability scanning.
 
 
 ## Security
