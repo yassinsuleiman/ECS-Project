@@ -93,3 +93,4 @@ jobs:
             echo ""
             echo "🔎 Health check: https://${{ secrets.DOMAIN_NAME }}/health"
           } >> "$GITHUB_STEP_SUMMARY"
+           
