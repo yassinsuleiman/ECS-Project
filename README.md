@@ -54,7 +54,7 @@ This repo uses separate GitHub Actions workflows:
 ---
 
 ## Demo of the Application
-![alt text](image.png)
+![alt text](images/gatus_ui.gif)
 
 This demo shows the Gatus web application interface and demonstrates how it tracks machine learning experiments, logs metrics and parameters, and visualizes results through its web-based UI.
 
