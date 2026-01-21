@@ -47,16 +47,12 @@ This repo uses separate GitHub Actions workflows:
 - **Terraform Deploy (CD):** Runs **Checkov** (IaC scan), then Terraform `fmt/validate/plan/apply`, followed by a `/health` check.
 - **Terraform Destroy:** Manual teardown workflow to destroy infrastructure (includes state-lock unlock + retry).
 
-![Gatus Web Application](Images/app.png)
-
-*The Gatus web application running in production with HTTPS encryption on the custom domain https://tm.yassinsuleiman.com, deployed on AWS ECS Fargate.*
-
 ---
 
 ## Demo of the Application
 ![alt text](Images/gatus_ui.gif)
 
-This demo shows the Gatus web application interface and demonstrates how it tracks machine learning experiments, logs metrics and parameters, and visualizes results through its web-based UI.
+*The Gatus web application running in production with HTTPS encryption on the custom domain https://tm.yassinsuleiman.com, deployed on AWS ECS Fargate.*
 
 ## Local Setup
 
