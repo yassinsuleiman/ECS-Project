@@ -52,3 +52,5 @@ variable "app_image" {
   description = "URL of Image in ECR Repository"
 
 }
+
+
