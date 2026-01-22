@@ -5,7 +5,6 @@ app_image         = "784607970889.dkr.ecr.eu-west-2.amazonaws.com/gatus-repo:1f9
 my_vpc_cidr       = "10.10.0.0/16"
 app_port          = 8080
 project_name      = "gatus"
-health_check_path = "/health"
 validation_method = "DNS"
 domain_name       = "yassinsuleiman.com"
 subdomain         = "tm"
