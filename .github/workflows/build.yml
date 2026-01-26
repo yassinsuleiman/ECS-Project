@@ -58,7 +58,7 @@ jobs:
       id: render-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ecs/task-definition.json   
+        task-definition: ecs/task_definition.json   
         container-name: gatus-app                   
         image: "${{ steps.ecr-login.outputs.registry }}/gatus-repo:${{ github.sha }}"
 

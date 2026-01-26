@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "gatus_app" {
   container_definitions = jsonencode([
     {
       name      = "gatus-app"
-      image     = "REPLACED_BY_CICD"
+      image     = var.app_image #Boostrap only, is gonna get overwritten by CICD
       essential = true
 
       portMappings = [
@@ -49,7 +49,6 @@ resource "aws_ecs_task_definition" "gatus_app" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = aws_cloudwatch_log_group.gatus.name
-          awslogs-create-group  = "false"
           awslogs-region        = data.aws_region.current.region
           awslogs-stream-prefix = "ecs"
         }

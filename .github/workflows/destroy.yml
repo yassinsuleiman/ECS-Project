@@ -3,8 +3,8 @@ name: Terraform Destroy
 on:
   workflow_dispatch:
     inputs:
-      terraform-destroy:
-        description: 'Are you sure you want to run "terraform destroy?" This will delete all infrastructure and cannot be undone!'
+      terraform_destroy:
+        description: 'Type "DESTROY" to confirm. This will delete infrastructure and cannot be undone.'
         required: true
 
 permissions:
@@ -12,14 +12,15 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  destroy:
+    if: ${{ github.event.inputs.terraform_destroy == 'DESTROY' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Checkov action
-        id: checkov
+      - name: Run Checkov (IaC scan)
         uses: bridgecrewio/checkov-action@master
         with:
           directory: ${{ vars.INFRA_PATH }}
@@ -31,25 +32,22 @@ jobs:
           role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: terraform plan
-        id: plan_first
-        continue-on-error: true
+      - name: Terraform destroy plan
+        id: plan
         uses: dflook/terraform-plan@v2
         with:
           path: ${{ vars.INFRA_PATH }}
-          destroy: true
+        # destroy: true
           target: |
-            module.vpc
-            module.alb
-            module.ecs
-            module.acm
+             module.vpc
+             module.alb
+             module.ecs
+             module.acm
 
-     
-      - name: terraform apply (destroy plan)
-        id: apply_first
-        continue-on-error: true
+
+      - name: Terraform apply (destroy)
         uses: dflook/terraform-apply@v2
         with:
           path: ${{ vars.INFRA_PATH }}
-          plan_path: ${{ steps.plan_first.outcome == 'success' && steps.plan_first.outputs.plan_path || steps.plan_retry.outputs.plan_path }}
+          plan_path: ${{ steps.plan.outputs.plan_path }}
           auto_approve: true

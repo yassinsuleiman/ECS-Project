@@ -49,7 +49,8 @@ variable "app_count" {
 }
 
 variable "app_image" {
-  description = "URL of Image in ECR Repository"
+  default = "784607970889.dkr.ecr.eu-west-2.amazonaws.com/gatus-repo:1f941da9bbdc4fc27ae81d119b8338c6473d9266"
+  description = "Bootstrap ECR Image, gonna get replaced by cicd"
 
 }
 
