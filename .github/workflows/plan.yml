@@ -28,11 +28,11 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Terraform Plan (dflook)
         id: tfplan
         uses: dflook/terraform-plan@v2
         with:
-          path: ${{ env.INFRA_PATH }}
+          path: terraform
 
