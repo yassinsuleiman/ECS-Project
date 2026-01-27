@@ -11,15 +11,13 @@
       "image": "REPLACE_IMAGE",
       "essential": true,
       "portMappings": [
-        {
-          "containerPort": 8080,
-          "protocol": "tcp"
-        }
+        { "containerPort": 8080, "protocol": "tcp" }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/gatus-task-definition",
+          "awslogs-region": "eu-west-2",
           "awslogs-stream-prefix": "ecs"
         }
       }
