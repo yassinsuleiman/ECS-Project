@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  INFRA_PATH: infra
+  INFRA_PATH: terraform
   AWS_REGION: ${{ vars.AWS_REGION }}
 
 jobs:
