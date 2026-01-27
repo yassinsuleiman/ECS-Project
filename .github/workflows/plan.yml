@@ -1,0 +1,38 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform-plan.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write   # needed so dflook can comment on PRs
+
+env:
+  INFRA_PATH: infra
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Plan (dflook)
+        id: tfplan
+        uses: dflook/terraform-plan@v2
+        with:
+          path: ${{ env.INFRA_PATH }}
+
