@@ -23,3 +23,7 @@ variable "certificate_arn" {
   type = string
 
 }
+
+variable "project_name" {
+  
+}

@@ -1,12 +1,15 @@
 resource "aws_alb" "main" {
-  name            = "gatus-alb"
+  name            = "${var.project_name}-load-balancer"
   subnets         = var.public_subnets
   security_groups = [var.alb_sg]
+
+
+  tags = { Name = "${var.project_name}-load-balancer"}
 
 }
 
 resource "aws_alb_target_group" "app_tg" {
-  name        = "gatus-target-group"
+  name        = "${var.project_name}-target-group"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
@@ -21,6 +24,8 @@ resource "aws_alb_target_group" "app_tg" {
     path                = var.health_check_path
     unhealthy_threshold = "2"
   }
+  tags = { Name = "${var.project_name}-target-group"}
+
 }
 
 # Redirect all traffic from the ALB to the target group
@@ -43,7 +48,7 @@ resource "aws_alb_listener" "http" {
     create_before_destroy = true
   }
 
-
+ tags = { Name = "${var.project_name}-http-listener"}
 }
 
 
@@ -62,4 +67,5 @@ resource "aws_alb_listener" "https" {
     create_before_destroy = true
   }
 
+   tags = { Name = "${var.project_name}-https-listener"}
 }

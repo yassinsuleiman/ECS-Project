@@ -13,6 +13,7 @@ module "alb" {
   vpc_id            = module.vpc.vpc_id
   certificate_arn   = module.acm.certificate_arn
   health_check_path = var.health_check_path
+  project_name      = var.project_name
 }
 
 module "ecs" {

@@ -7,8 +7,8 @@ resource "aws_ecs_cluster" "main" {
   }
 
 }
-resource "aws_cloudwatch_log_group" "gatus" {
-  name              = "/ecs/gatus-task-definition"
+resource "aws_cloudwatch_log_group" "main" {
+  name              = "/${var.project_name}/logs"
   retention_in_days = 14
 
   tags = { Name = "${var.project_name}-logs" }
@@ -18,8 +18,8 @@ resource "aws_cloudwatch_log_group" "gatus" {
 data "aws_region" "current" {}
 
 #AWS Task definiton
-resource "aws_ecs_task_definition" "gatus_app" {
-  family                   = "gatus_app_task"
+resource "aws_ecs_task_definition" "main" {
+  family                   = "${var.project_name}_task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "gatus_app" {
   }
   container_definitions = jsonencode([
     {
-      name      = "gatus-app"
+      name      = "${var.project_name}-app"
       image     = var.app_image #Boostrap only, is gonna get overwritten by CICD
       essential = true
 
@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "gatus_app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = aws_cloudwatch_log_group.gatus.name
+          awslogs-group         = aws_cloudwatch_log_group.main.name
           awslogs-region        = data.aws_region.current.region
           awslogs-stream-prefix = "ecs"
         }
@@ -56,14 +56,14 @@ resource "aws_ecs_task_definition" "gatus_app" {
     }
   ])
 
-  tags = { Name = "${var.project_name}-app-task" }
+  tags = { Name = "${var.project_name}-task" }
 }
 
 
 resource "aws_ecs_service" "main" {
   name            = "${var.project_name}-service"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.gatus_app.arn
+  task_definition = aws_ecs_task_definition.main.arn
   desired_count   = var.app_count
   launch_type     = "FARGATE"
   
@@ -81,7 +81,7 @@ resource "aws_ecs_service" "main" {
 
   load_balancer {
     target_group_arn = var.alb_tg
-    container_name   = "gatus-app"
+    container_name   = "${var.project_name}-app"
     container_port   = var.app_port
 
   }

@@ -3,7 +3,7 @@
 resource "aws_security_group" "alb_sg" {
   name        = "alb-sg"
   description = "controls access to the ALB"
-  vpc_id      = aws_vpc.gatus_vpc.id
+  vpc_id      = aws_vpc.main_vpc.id
 
   ingress {
     protocol    = "tcp"
@@ -31,7 +31,7 @@ resource "aws_security_group" "alb_sg" {
 resource "aws_security_group" "ecs_tasks_sg" {
   name        = "ecs-task-sg"
   description = "allow inbound access from the ALB only"
-  vpc_id      = aws_vpc.gatus_vpc.id
+  vpc_id      = aws_vpc.main_vpc.id
 
   ingress {
     protocol        = "tcp"
