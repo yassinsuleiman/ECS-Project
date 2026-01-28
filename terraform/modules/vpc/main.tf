@@ -52,9 +52,9 @@ resource "aws_eip" "gw" {
 }
 
 resource "aws_nat_gateway" "main" {
-  count         = var.az_count
-  subnet_id     = element(aws_subnet.public.*.id, count.index)
-  allocation_id = element(aws_eip.gw.*.id, count.index)
+ connectivity_type = "public"
+ availability_mode = "regional"
+
 
   tags = { Name = "${var.project_name}-nat" }
 }
